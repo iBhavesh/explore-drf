@@ -19,4 +19,8 @@ This is the backend api built with Django Rest Framework.
     ```python
     pip install -r requirements.txt
     ```
-3. 
+3. Make migrations and migrate 
+4. Start server using 
+    ```python
+    python manage.py runserver
+    ```
