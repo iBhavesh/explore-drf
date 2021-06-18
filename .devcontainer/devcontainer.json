@@ -1,0 +1,11 @@
+{
+  "extensions": [
+    "batisteo.vscode-django",
+    "patbenatar.advanced-new-file",
+    "sleistner.vscode-fileutils",
+    "christian-kohler.path-intellisense",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "rangav.vscode-thunder-client"
+  ]
+}
