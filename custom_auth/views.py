@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 
 class TestView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         content = {
