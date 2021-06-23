@@ -11,3 +11,7 @@ class TestView(APIView):
             'status': 'request was permitted'
         }
         return Response(content)
+
+
+def uploadImage(request):
+    pass
