@@ -22,5 +22,4 @@ class Followers(models.Model):
 
     class Meta:
         verbose_name_plural = "Followers"
-        get_latest_by = "-created_at"
         unique_together = ('follower', 'following')
