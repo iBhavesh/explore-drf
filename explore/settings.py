@@ -156,7 +156,7 @@ AUTH_USER_MODEL = 'user.User'
 APPEND_SLASH = False
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
     'USER_ID_FIELD': 'email',
     'ROTATE_REFRESH_TOKENS': True
 }

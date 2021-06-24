@@ -63,7 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         _("Date of Birth"), auto_now=False, auto_now_add=False)
     is_active = models.BooleanField(_("Is Active"), default=True)
     is_staff = models.BooleanField(_("Is Staff"), default=False)
-    followers = models.ManyToManyField("self", verbose_name=_(
+    follows = models.ManyToManyField("self", verbose_name=_(
         "Followers"), symmetrical=False, through="followers.Followers", through_fields=("follower", "following"))
 
     objects = UserManager()

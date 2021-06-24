@@ -31,7 +31,7 @@ def register(request):
 @api_view(['PUT'])
 def update_password(request):
     try:
-        user = User.objects.get(email=str(request.user))
+        user = User.objects.get(pk=request.user.id)
         password_is_valid = check_password(
             request.data['password'], user.password)
         if password_is_valid:

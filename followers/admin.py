@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Followers
+from .models import FollowRequest, Followers
 # Register your models here.
 
 # admin.site.register(Followers)
@@ -7,4 +7,9 @@ from .models import Followers
 
 @admin.register(Followers)
 class FollowersAdmin(admin.ModelAdmin):
-    list_display = ("follower", "following", "is_accepted")
+    list_display = ("follower", "following")
+
+
+@admin.register(FollowRequest)
+class FollowRequestsAdmin(admin.ModelAdmin):
+    list_display = ("request_from", "request_to")

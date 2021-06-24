@@ -2,13 +2,24 @@ from rest_framework import serializers
 from .models import User
 
 
+class NestedUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'first_name',
+                  'last_name']
+
+
 class UserSerializer(serializers.ModelSerializer):
+    follows = NestedUserSerializer(read_only=True, many=True)
+    # follower = NestedUserSerializer(read_only=True, many=True)
+    # following = NestedUserSerializer(read_only=True, many=True)
+
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
-                  'last_name', 'date_of_birth', 'followers']
+                  'last_name', 'date_of_birth', 'follows', 'follower', 'following']
         extra_kwargs = {'password': {'write_only': True}}
-        depth = 1
+        depth = 2
 
     def create(self, validated_data):
         user = User.objects.create_user(
