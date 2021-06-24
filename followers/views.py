@@ -13,9 +13,9 @@ from followers.models import FollowRequest
 @api_view()
 @authentication_classes([])
 @permission_classes([])
-def get_followers(request, pk):
+def get_following(request, pk):
     user = UserSerializer(User.objects.get(pk=pk))
-    return Response(user.data, status=status.HTTP_200_OK)
+    return Response(user.data.get('follows'), status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

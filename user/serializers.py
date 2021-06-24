@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name',
                   'last_name', 'date_of_birth', 'follows', 'follower', 'following']
         extra_kwargs = {'password': {'write_only': True}}
-        depth = 2
+        depth = 1
 
     def create(self, validated_data):
         user = User.objects.create_user(
