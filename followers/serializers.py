@@ -11,3 +11,4 @@ class FollowerSerializer(serializers.ModelSerializer):
         model = Followers
         fields = ['follower', 'following']
         depth = 2
+        # exclude = ['created_at', 'updated_at']

@@ -12,8 +12,8 @@ from user import models, serializers
 @authentication_classes([])
 @permission_classes([])
 def get_followers(request, pk):
-    user = serializers.UserSerializer(models.User.objects.get(pk=pk))
-    return Response(user.data, status=HTTP_200_OK)
+    # user = serializers.UserSerializer(models.User.objects.get(pk=pk))
+    # return Response(user.data, status=HTTP_200_OK)
 
     followers = FollowerSerializer(
         Followers.objects.filter(follower=pk), many=True)
