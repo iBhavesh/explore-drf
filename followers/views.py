@@ -18,6 +18,14 @@ def get_following(request, pk):
     return Response(user.data.get('follows'), status=status.HTTP_200_OK)
 
 
+@api_view()
+@authentication_classes([])
+@permission_classes([])
+def get_follower(request, pk):
+    user = UserSerializer(User.objects.get(pk=pk))
+    return Response(user.data.get('followed_by'), status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 def accept_follower(request, pk):
     try:

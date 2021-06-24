@@ -11,13 +11,13 @@ class NestedUserSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     follows = NestedUserSerializer(read_only=True, many=True)
-    # follower = NestedUserSerializer(read_only=True, many=True)
+    followed_by = NestedUserSerializer(read_only=True, many=True)
     # following = NestedUserSerializer(read_only=True, many=True)
 
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
-                  'last_name', 'date_of_birth', 'follows', 'follower', 'following']
+                  'last_name', 'date_of_birth', 'follows', 'followed_by']
         extra_kwargs = {'password': {'write_only': True}}
         depth = 1
 

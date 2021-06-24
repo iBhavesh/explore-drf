@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_("Is Active"), default=True)
     is_staff = models.BooleanField(_("Is Staff"), default=False)
     follows = models.ManyToManyField("self", verbose_name=_(
-        "Followers"), symmetrical=False, through="followers.Followers", through_fields=("follower", "following"))
+        "Followers"), symmetrical=False, through="followers.Followers", through_fields=("follower", "following"), related_name='followed_by')
 
     objects = UserManager()
 
