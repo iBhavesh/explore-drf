@@ -1,11 +1,12 @@
-from followers.serializers import FollowRequestSerializer
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
+from rest_framework.views import APIView
 from user.serializers import UserSerializer
 from user.models import User
-from followers.models import FollowRequest
+from .serializers import FollowRequestSerializer
+from .models import FollowRequest, Followers
 
 # Create your views here.
 
@@ -27,13 +28,11 @@ def get_follower(request, pk):
 
 
 @api_view(['POST'])
-def accept_follower(request, pk):
+def accept_follower(request, follower_id):
     try:
-        print(pk)
-        print(request.user.id)
-        follower = User.objects.get(pk=pk)
+        follower = User.objects.get(pk=follower_id)
         follow_request = FollowRequest.objects.get(
-            request_from=pk, request_to=request.user.id)
+            request_from=follower_id, request_to=request.user.id)
         user = User.objects.get(pk=request.user.id)
         follower.follows.add(user)
         follow_request.delete()
@@ -46,7 +45,30 @@ def accept_follower(request, pk):
         }, status=status.HTTP_400_BAD_REQUEST)
     except User.DoesNotExist:
         return Response({
-            'status': "User does not exist"
+            'status': "Follower does not exist"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except:  # pylint: disable=bare-except
+        return Response({
+            'status': "Something Went Wrong"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def reject_follow_request(request, follower_id):
+    try:
+        follow_request = FollowRequest.objects.get(
+            request_from=follower_id, request_to=request.user.id)
+        follow_request.delete()
+        return Response({
+            'status': "Follow request rejected"
+        }, status=status.HTTP_201_CREATED)
+    except FollowRequest.DoesNotExist:
+        return Response({
+            'status': "No such follow request exists!"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except User.DoesNotExist:
+        return Response({
+            'status': "Follower does not exist"
         }, status=status.HTTP_400_BAD_REQUEST)
     except:  # pylint: disable=bare-except
         return Response({
@@ -56,3 +78,33 @@ def accept_follower(request, pk):
 
 class SendFollowRequest(CreateAPIView):
     serializer_class = FollowRequestSerializer
+
+
+class RemoveFollower(APIView):
+    def delete(self, request, format=None):  # pylint: disable=redefined-builtin,unused-argument
+        print(request.data)
+        try:
+            follower = Followers.objects.get(
+                follower=request.data.get('follower_id'), following=request.user.id)
+            follower.delete()
+            user = Followers.objects.filter(
+                following=request.data.get('follower_id'), follower=request.user.id)
+            if user.exists():
+                user[0].delete()
+        except:  # pylint: disable=bare-except
+            return Response({"error": "Something Went Wrong"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "successful"}, status=status.HTTP_202_ACCEPTED)
+
+
+class UnFollow(APIView):
+    def delete(self, request, format=None):  # pylint: disable=redefined-builtin,unused-argument
+        print(request.data)
+        try:
+            user = Followers.objects.get(
+                following=request.data.get('following_id'), follower=request.user.id)
+            user.delete()
+        except Followers.DoesNotExist:
+            return Response({"error": "User doesn't follow the "}, status=status.HTTP_400_BAD_REQUEST)
+        except:  # pylint: disable=bare-except
+            return Response({"error": "Something Went Wrong"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Unfollowed"}, status=status.HTTP_202_ACCEPTED)
