@@ -31,7 +31,8 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, date_of_birth, password=None, **kwargs):
+    def create_superuser(self, email, first_name, last_name,
+                         date_of_birth, password=None, **kwargs):
         kwargs.setdefault('is_staff', True)
         kwargs.setdefault('is_superuser', True)
 
@@ -64,7 +65,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_("Is Active"), default=True)
     is_staff = models.BooleanField(_("Is Staff"), default=False)
     follows = models.ManyToManyField("self", verbose_name=_(
-        "Followers"), symmetrical=False, through="followers.Followers", through_fields=("follower", "following"), related_name='followed_by')
+        "Followers"), symmetrical=False, through="followers.Followers",
+        through_fields=("follower", "following"), related_name='followed_by')
 
     objects = UserManager()
 
