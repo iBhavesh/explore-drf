@@ -3,6 +3,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from helpers import upload_to
 # Create your models here.
 
 
@@ -67,6 +68,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     follows = models.ManyToManyField("self", verbose_name=_(
         "Followers"), symmetrical=False, through="followers.Followers",
         through_fields=("follower", "following"), related_name='followed_by')
+    profile_picture = models.ImageField(
+        _("Profile picture"), upload_to=upload_to, height_field=None, width_field=None, max_length=None, null=True)
+    profile_updated_at = models.DateTimeField(
+        _("Profile Update At"), auto_now=False, auto_now_add=False, null=True)
 
     objects = UserManager()
 

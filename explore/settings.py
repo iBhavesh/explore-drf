@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from os import environ
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,10 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#75_+p@#e5^&(l5pd#++i9ti0ae%xu1unt0(^sp%hkwn$pk3jk'
+SECRET_KEY = environ.get(
+    'SECRET_KEY', 'django-insecure-#75_+p@#e5^&(l5pd#++i9ti0ae%xu1unt0(^sp%hkwn$pk3jk')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = environ.get('PRODUCTION', '') != 'False'
 
 ALLOWED_HOSTS = []
 
@@ -155,9 +157,14 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'user.User'
 APPEND_SLASH = False
-
+if DEBUG:
+    SIMPLE_JWT = {
+        'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+        'USER_ID_FIELD': 'email',
+        'ROTATE_REFRESH_TOKENS': True
+    }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'USER_ID_FIELD': 'email',
     'ROTATE_REFRESH_TOKENS': True
 }

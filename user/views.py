@@ -1,10 +1,13 @@
 from django.contrib.auth.hashers import check_password
-from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer
+from posts.serializers import PostSerializer
+from .serializers import UserSerializer, UserProfileSerializer
 from .models import User
 # Create your views here.
 
@@ -43,5 +46,24 @@ def update_password(request):
                 return Response('Updated', status=status.HTTP_200_OK)
             return Response('Password and confirm password should match', status=status.HTTP_400_BAD_REQUEST)
         return Response('Incorrect Password', status=status.HTTP_401_UNAUTHORIZED)
-    except:
+    except:  # pylint: disable=bare-except
         return Response('Request parameter are invalid', status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateProfilePicture(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        print(request.data)
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            print(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfile(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileSerializer

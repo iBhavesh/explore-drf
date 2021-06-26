@@ -1,37 +1,8 @@
-from time import strftime
-import mimetypes
 import os
-import sys
-from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from PIL import Image
 from user.models import User
-
-
-def upload_to(instance, filename):  # pylint:disable=unused-argument
-    filenames = os.path.splitext(filename)
-    return "posts/" + strftime('%Y%m%d%H%M%S') + filenames[-1]
-
-
-def compress_image(uploaded_image):
-    mime_type = mimetypes.guess_type(uploaded_image.name)
-    if mime_type[0] is not None:
-        return uploaded_image
-    elif not mime_type[0].startswith('image'):
-        return uploaded_image
-    elif uploaded_image.size is not None and uploaded_image.size / 1024 < 200:
-        return uploaded_image
-    image_temporary = Image.open(uploaded_image)
-    output_io_stream = BytesIO()
-    # imageTemproaryResized = imageTemproary.resize((1020, 573))
-    image_temporary.save(output_io_stream, format='JPEG', quality=50)
-    output_io_stream.seek(0)
-    uploaded_image = InMemoryUploadedFile(
-        output_io_stream, 'ImageField', "%s.jpg" % uploaded_image.name.split('.')[
-            0], 'image/jpeg', sys.getsizeof(output_io_stream), None)
-    return uploaded_image
+from helpers import compress_image, upload_to
 
 
 class Posts(models.Model):
@@ -45,7 +16,7 @@ class Posts(models.Model):
     ]
 
     author = models.ForeignKey(User, verbose_name=_(
-        "Author"), on_delete=models.CASCADE)
+        "Author"), on_delete=models.CASCADE, related_name="posts")
     caption = models.TextField(_("Caption"), blank=True)
     media = models.FileField(_("Media Path"), upload_to=upload_to,
                              max_length=255, null=True,)
@@ -71,11 +42,13 @@ class Posts(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.media = compress_image(self.media)
+            if self.media.path is not None:
+                self.media = compress_image(self.media)
         super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Posts"
+        ordering = ['-created_at']
 
 
 class Comments(models.Model):
@@ -90,3 +63,4 @@ class Comments(models.Model):
 
     class Meta:
         verbose_name_plural = "Comments"
+        ordering = ['created_at']

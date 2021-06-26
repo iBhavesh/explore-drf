@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
-from user.serializers import UserSerializer
+from user.serializers import UserProfileSerializer
 from user.models import User
 from .serializers import FollowRequestSerializer
 from .models import FollowRequest, Followers
@@ -15,7 +15,7 @@ from .models import FollowRequest, Followers
 @authentication_classes([])
 @permission_classes([])
 def get_following(request, pk):
-    user = UserSerializer(User.objects.get(pk=pk))
+    user = UserProfileSerializer(User.objects.get(pk=pk))
     return Response(user.data.get('follows'), status=status.HTTP_200_OK)
 
 
@@ -23,7 +23,7 @@ def get_following(request, pk):
 @authentication_classes([])
 @permission_classes([])
 def get_follower(request, pk):
-    user = UserSerializer(User.objects.get(pk=pk))
+    user = UserProfileSerializer(User.objects.get(pk=pk))
     return Response(user.data.get('followed_by'), status=status.HTTP_200_OK)
 
 
