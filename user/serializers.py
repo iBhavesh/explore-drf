@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import User
 from posts.models import Posts
+from .models import User
 
 
 class NestedFollowSerializer(serializers.ModelSerializer):
@@ -18,16 +18,17 @@ class NestedPostSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    follows = NestedFollowSerializer(read_only=True, many=True)
-    followed_by = NestedFollowSerializer(read_only=True, many=True)
-    posts = NestedPostSerializer(read_only=True, many=True)
+    # follows = NestedFollowSerializer(read_only=True, many=True)
+    # followed_by = NestedFollowSerializer(read_only=True, many=True)
+    # posts = NestedPostSerializer(read_only=True, many=True)
 
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
-                  'last_name', 'date_of_birth', 'follows', 'followed_by', 'profile_picture', 'posts']
+                  'last_name', 'date_of_birth', 'follows',
+                  'followed_by', 'profile_picture', 'posts']
         extra_kwargs = {'password': {'write_only': True}}
-        depth = 1
+        depth = 0
 
     def create(self, validated_data):
         user = User.objects.create_user(

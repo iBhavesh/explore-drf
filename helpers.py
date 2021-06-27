@@ -8,9 +8,11 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 def upload_to(instance, filename):  # pylint:disable=unused-argument
-    print(instance)
+    prefix = 'post'
+    if instance.content_type == 'profile':
+        prefix = 'profile'
     filenames = os.path.splitext(filename)
-    return "posts/" + strftime('%Y%m%d%H%M%S') + filenames[-1]
+    return prefix + "/" + strftime('%Y%m%d%H%M%S') + filenames[-1]
 
 
 def compress_image(uploaded_image):

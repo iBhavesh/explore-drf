@@ -1,22 +1,23 @@
-from xml.dom import ValidationErr
-from django.forms import ValidationError
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import PostSerializer
+from .models import Posts
 
 # Create your views here.
 
 
-class AddPost(CreateAPIView):
+class AddPost(ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = PostSerializer
+    queryset = Posts.objects.all()
 
     def create(self, request, *args, **kwargs):
         author = request.data.get('author', "")
         if request.user.id is not int(author):
-            return Response({"error": "You are not authorized to do this"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "You are not authorized to do this"},
+                            status=status.HTTP_401_UNAUTHORIZED)
         return super().create(request, *args, **kwargs)
 
     # def perform_create(self, serializer):

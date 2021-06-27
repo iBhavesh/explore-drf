@@ -9,6 +9,7 @@ from . import views
 urlpatterns = [
     path('<int:pk>', views.UserProfile.as_view()),
     path('', include('followers.urls')),
+    path('', views.GetUser.as_view(), name="get_user"),
     path('login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('refresh-token', TokenRefreshView.as_view(), name='token_refresh'),
     path('register', views.register),

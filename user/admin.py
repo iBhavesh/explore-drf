@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib.auth.models import Group
-from user.models import User
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+from user.models import User
 
 
 class UserCreationForm(forms.ModelForm):
@@ -40,9 +40,10 @@ class UserChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     disabled password hash display field.
     """
-    password = ReadOnlyPasswordHashField(label=('Password'), help_text=("Raw passwords are not stored, so there is no way to see "
-                                                                        "this user's password, but you can change the password "
-                                                                        "using <a href=\"../password/\">this form</a>."))
+    password = ReadOnlyPasswordHashField(label=('Password'),
+                                         help_text=("Raw passwords are not stored,"" so there is no way to see "  # pylint: disable=line-too-long
+                                                    "this user's password, but you can change the password "  # pylint: disable=line-too-long
+                                                    "using <a href=\"../password/\">this form</a>."))  # pylint: disable=line-too-long
 
     class Meta:
         model = User
@@ -61,13 +62,16 @@ class UserAdminConfig(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {
-         'fields': ('first_name', 'last_name', 'date_of_birth',)}),
+         'fields': ('first_name', 'last_name', 'date_of_birth',
+                    'profile_picture', 'profile_updated_at')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'date_of_birth', 'first_name', 'last_name', 'password1', 'password2', 'is_active', 'is_staff'),
+            'fields': ('email', 'date_of_birth', 'first_name',
+                       'last_name', 'password1', 'password2',
+                       'is_active', 'is_staff'),
         }),
     )
 

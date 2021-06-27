@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
+from posts.models import Posts
 from posts.serializers import PostSerializer
 from .serializers import UserSerializer, UserProfileSerializer
 from .models import User
@@ -44,7 +45,8 @@ def update_password(request):
                 user.save()
                 print(user.password)
                 return Response('Updated', status=status.HTTP_200_OK)
-            return Response('Password and confirm password should match', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Password and confirm password should match',
+                            status=status.HTTP_400_BAD_REQUEST)
         return Response('Incorrect Password', status=status.HTTP_401_UNAUTHORIZED)
     except:  # pylint: disable=bare-except
         return Response('Request parameter are invalid', status=status.HTTP_400_BAD_REQUEST)
@@ -54,11 +56,18 @@ class UpdateProfilePicture(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        print(request.data)
+        author = request.data.get('author', "")
+        if request.user.id is not int(author):
+            return Response({"error": "You are not authorized to do this"},
+                            status=status.HTTP_401_UNAUTHORIZED)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            print(serializer.data)
+            user = User.objects.get(id=request.user.id)
+            post = Posts.objects.filter(author=user.id)
+            user.profile_picture = post[0].media
+            user.profile_updated_at = post[0].updated_at
+            user.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -67,3 +76,10 @@ class UpdateProfilePicture(APIView):
 class UserProfile(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
+
+
+class GetUser(APIView):
+    def get(self, request):
+        user = User.objects.get(id=request.user.id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)

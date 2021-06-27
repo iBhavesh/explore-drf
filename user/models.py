@@ -69,9 +69,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Followers"), symmetrical=False, through="followers.Followers",
         through_fields=("follower", "following"), related_name='followed_by')
     profile_picture = models.ImageField(
-        _("Profile picture"), upload_to=upload_to, height_field=None, width_field=None, max_length=None, null=True)
+        _("Profile picture"),
+        upload_to=upload_to, height_field=None, width_field=None, max_length=None, null=True)
     profile_updated_at = models.DateTimeField(
         _("Profile Update At"), auto_now=False, auto_now_add=False, null=True)
+    is_private_profile = models.BooleanField(
+        _("Is Private profile"), default=False)
 
     objects = UserManager()
 
