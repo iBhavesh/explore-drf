@@ -63,7 +63,8 @@ class UserAdminConfig(UserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {
          'fields': ('first_name', 'last_name', 'date_of_birth',
-                    'profile_picture', 'profile_updated_at')}),
+                    'profile_picture', 'profile_updated_at',
+                    'is_private_profile')}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
     add_fieldsets = (

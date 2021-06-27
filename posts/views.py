@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
@@ -11,7 +12,10 @@ from .models import Posts
 class AddPost(ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = PostSerializer
-    queryset = Posts.objects.all()
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Posts.objects.filter(Q(author__is_private_profile=False) | Q(author__is_private_profile=True) & Q(author__foloowed_by=user_id))
 
     def create(self, request, *args, **kwargs):
         author = request.data.get('author', "")
