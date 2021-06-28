@@ -24,10 +24,10 @@ This is the backend api built with Django Rest Framework.
 
 3. Make migrations and migrate
 
-   - If you use the provided db.sqlite3 some seed data is already insertef, delete the file db.sqlite3 and then migrate if you want to use your custom data
+   - If you use the provided db.sqlite3 some seed data is already inserted, delete the file db.sqlite3 and then migrate if you want to use your custom data
    - Admin credentials are:
      - Email: admin@admin.com
-     - Password: admin123
+     - Password: admin
 
 4. Start server using
    ```python
@@ -37,25 +37,22 @@ This is the backend api built with Django Rest Framework.
 # API Endpoints
 
 ### Admin
-
       GET,POST: /admin
 
 ### User
-
-      GET: /user/<id>
+      GET:  /user/<id>
       POST: /user/login
       POST: /user/refresh-token
       POST: /user/register
-      POST: /user/update-password
+      PUT:  /user/password
       POST: /user/profile/picture
-      GET: /user/<id>/following
-      GET: /user/<id>/followers
-      POST: /user/follower/remove
-      POST: /user/follower/unfollow
-      POST: /user/follower/<id>/accept
-      POST: /user/follower/<id>/reject
-      POST: /user/follower/<id>/send-request
+      GET:  /user/<id>/following
+      GET:  /user/<id>/followers
+      DEL:  /user/<id>/follower/remove
+      POST: /user/<id>/following/unfollow
+      POST: /user/<id>/follower/accept
+      POST: /user/<id>/follower/reject
+      POST: /user/<id>/follow/request
 
 ### Posts
-
       POST,GET: /posts/
