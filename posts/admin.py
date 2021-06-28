@@ -5,7 +5,8 @@ from .models import Posts, Comments
 
 @admin.register(Posts)
 class PostsManager(admin.ModelAdmin):
-    pass
+    list_display = ['author', 'id', 'caption',
+                    'media_type', 'content_type', 'created_at']
 
 
 @admin.register(Comments)

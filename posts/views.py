@@ -15,7 +15,9 @@ class AddPost(ListCreateAPIView):
 
     def get_queryset(self):
         user_id = self.request.user.id
-        return Posts.objects.filter(Q(author__is_private_profile=False) | Q(author__is_private_profile=True) & Q(author__foloowed_by=user_id))
+        return Posts.objects.filter(~Q(author=user_id),
+                                    Q(author__is_private_profile=False) |
+                                    Q(author__followed_by=user_id))
 
     def create(self, request, *args, **kwargs):
         author = request.data.get('author', "")

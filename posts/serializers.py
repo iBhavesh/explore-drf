@@ -1,16 +1,19 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from user.serializers import UserSerializer
 from .models import Comments, Posts
 
 User = get_user_model()
 
 
 class PostSerializer(serializers.ModelSerializer):
+    author = UserSerializer()
 
     class Meta:
         model = Posts
-        fields = ['id', 'caption', 'media_type',
-                  'content_type', 'media', 'author']
+        fields = ['id', 'author', 'caption', 'media_type',
+                  'content_type', 'media', 'created_at']
+        depth: 1
 
 
 class CommentSerializer(serializers.ModelSerializer):

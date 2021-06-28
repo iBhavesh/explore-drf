@@ -7,4 +7,4 @@ from .models import Followers
 
 @admin.register(Followers)
 class FollowersAdmin(admin.ModelAdmin):
-    list_display = ("id", "follower", "following", "is_accepted")
+    list_display = ("follower", "following", "is_accepted", "id")

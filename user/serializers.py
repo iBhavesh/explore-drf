@@ -29,7 +29,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'last_name', 'date_of_birth', 'follows',
                   'followed_by', 'profile_picture', 'posts', 'follower', 'following']
         extra_kwargs = {'password': {'write_only': True}}
-        # depth = 1
+        depth = 1
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -46,9 +46,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
-                  'last_name', 'date_of_birth',  'profile_picture', 'password', 'is_private_profile']
+                  'last_name', 'date_of_birth',
+                  'profile_picture', 'password', 'is_private_profile']
         extra_kwargs = {'password': {'write_only': True}}
-        # depth = 1
+        depth = 1
 
     def create(self, validated_data):
         user = User.objects.create_user(

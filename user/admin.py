@@ -57,8 +57,8 @@ class UserAdminConfig(UserAdmin):
 
     ordering = ('id',)
     list_display = ['email', 'id', 'first_name',
-                    'last_name', 'is_active', 'is_staff']
-    search_fields = ['email', 'first_name', 'last_name']
+                    'last_name', 'is_active', 'is_private_profile']
+    search_fields = ['email', 'first_name', 'last_name', ]
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {

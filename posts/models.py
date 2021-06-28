@@ -11,6 +11,7 @@ class Posts(models.Model):
         ('profile', 'profile')
     ]
     media_type_options = [
+        (None, None),
         ('video', 'video/*'),
         ('image', 'image/*'),
     ]
@@ -20,7 +21,8 @@ class Posts(models.Model):
     caption = models.TextField(_("Caption"), blank=True)
     media = models.FileField(_("Media Path"), upload_to=upload_to,
                              max_length=255, null=True,)
-    media_type = models.CharField(_("Media Type"), max_length=50, null=True)
+    media_type = models.CharField(_("Media Type"), choices=media_type_options,
+                                  max_length=50, null=True)
     content_type = models.CharField(
         _("Content type"), max_length=50, choices=content_option)
     created_at = models.DateTimeField(
@@ -31,6 +33,8 @@ class Posts(models.Model):
     def __str__(self):
         if len(self.caption) > 0:
             return self.caption[:10] + "..."
+        if self.content_type == 'profile':
+            return self.author.first_name + "'s Profile Picture"
         return self.author.first_name + "'s Upload"
 
     def delete(self, *args, **kwargs):
@@ -41,6 +45,8 @@ class Posts(models.Model):
         return super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
+        if self.content_type == 'profile':
+            self.media_type = 'image'
         if not self.id:
             if self.media.path is not None:
                 self.media = compress_image(self.media)
