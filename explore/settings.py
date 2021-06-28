@@ -163,8 +163,9 @@ if DEBUG:
         'USER_ID_FIELD': 'email',
         'ROTATE_REFRESH_TOKENS': True
     }
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'USER_ID_FIELD': 'email',
-    'ROTATE_REFRESH_TOKENS': True
-}
+else:
+    SIMPLE_JWT = {
+        'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+        'USER_ID_FIELD': 'email',
+        'ROTATE_REFRESH_TOKENS': True
+    }
