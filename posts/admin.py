@@ -11,4 +11,5 @@ class PostsManager(admin.ModelAdmin):
 
 @admin.register(Comments)
 class CommentsManager(admin.ModelAdmin):
-    pass
+    list_display = ['author', 'id', 'post',
+                    'comment', 'created_at', 'updated_at', 'is_active']

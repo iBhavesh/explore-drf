@@ -31,11 +31,7 @@ class Posts(models.Model):
         _("Updated At"), auto_now=True, auto_now_add=False)
 
     def __str__(self):
-        if len(self.caption) > 0:
-            return self.caption[:10] + "..."
-        if self.content_type == 'profile':
-            return self.author.first_name + "'s Profile Picture"
-        return self.author.first_name + "'s Upload"
+        return str(self.id)
 
     def delete(self, *args, **kwargs):
         try:
@@ -58,14 +54,16 @@ class Posts(models.Model):
 
 
 class Comments(models.Model):
+    author = models.ForeignKey(User, verbose_name=_(
+        "Author"), on_delete=models.CASCADE)
     post = models.ForeignKey(Posts, verbose_name=_(
-        "Comments"), on_delete=models.CASCADE)
+        "post"), on_delete=models.CASCADE)
     is_active = models.BooleanField(_("Is Active"), default=True)
     comment = models.TextField(_("Comment"))
     created_at = models.DateTimeField(
         _("Created At"), auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(
-        _("Updated At"), auto_now=False, auto_now_add=False)
+        _("Updated At"), auto_now=True, auto_now_add=False)
 
     class Meta:
         verbose_name_plural = "Comments"
