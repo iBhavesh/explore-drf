@@ -95,6 +95,8 @@ class PostReaction(models.Model):
                              related_name="post_reaction")
     reaction_type = models.ForeignKey(
         ReactionTypes, verbose_name=_("Reaction"), on_delete=models.CASCADE)
+    created_at = models.DateTimeField(
+        _("Created At"), auto_now=False, auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "PostReactions"
@@ -109,6 +111,8 @@ class CommentReaction(models.Model):
                                 related_name="comment_reaction")
     reaction_type = models.ForeignKey(
         ReactionTypes, verbose_name=_("Reaction"), on_delete=models.CASCADE)
+    created_at = models.DateTimeField(
+        _("Created At"), auto_now=False, auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "CommentReactions"

@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from user.serializers import UserSerializer
-from .models import Comments, PostReaction, Posts
+from .models import CommentReaction, Comments, PostReaction, Posts
 
 User = get_user_model()
 
@@ -10,8 +10,15 @@ class PostReactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostReaction
-        fields = ['author', 'post', 'reaction_type']
-        depth = 1
+        fields = ['author', 'post', 'reaction_type', 'created_at']
+        # depth = 1
+
+
+class CommentReactionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CommentReaction
+        fields = ['author', 'comment', 'reaction_type', 'created_at']
 
 
 class PostSerializer(serializers.ModelSerializer):

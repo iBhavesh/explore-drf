@@ -1,13 +1,19 @@
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import (
-    ListCreateAPIView, RetrieveUpdateDestroyAPIView
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
 )
+from rest_framework.mixins import (
+    CreateModelMixin, ListModelMixin, DestroyModelMixin)
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.response import Response
 from .permissions import IsAuthorOrPostAuthorOrReadOnly, IsAuthorOrReadOnly
-from .serializers import CommentSerializer, PostReactionSerializer, PostSerializer
-from .models import Comments, PostReaction, Posts
+from .serializers import (
+    CommentReactionSerializer,
+    CommentSerializer, PostReactionSerializer, PostSerializer
+)
+from .models import CommentReaction, Comments, PostReaction, Posts
 
 # Create your views here.
 
@@ -71,7 +77,7 @@ class Comment(RetrieveUpdateDestroyAPIView):
         instance.save()
 
 
-class ReactPost(ListCreateAPIView):
+class PostReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, DestroyModelMixin):
     serializer_class = PostReactionSerializer
 
     def get_queryset(self):
@@ -82,3 +88,73 @@ class ReactPost(ListCreateAPIView):
         request.data['post'] = kwargs['post_id']
         print(request.data)
         return super().create(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.get_queryset(),
+                                     author=self.request.user.id)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# class PostReactionRemove(APIView, DestroyModelMixin):
+#     def get_queryset(self):
+#         return PostReaction.objects.filter(post=self.kwargs['post_id'],
+#                                            author=self.request.user.id)
+
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
+
+#     def destroy(self, request, *args, **kwargs):
+#         instance = get_object_or_404(self.get_queryset(),
+#                                               author=self.request.user.id)
+#         self.perform_destroy(instance)
+
+
+class CommentReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, DestroyModelMixin):
+    serializer_class = CommentReactionSerializer
+
+    def get_queryset(self):
+        return CommentReaction.objects.filter(comment=self.kwargs['comment_id'])
+
+    def create(self, request, *args, **kwargs):
+        request.data['author'] = request.user.id
+        request.data['comment'] = kwargs['comment_id']
+        print(request.data)
+        return super().create(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = get_object_or_404(self.get_queryset(),
+                                     author=self.request.user.id)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# class CommentReactionRemove(APIView, DestroyModelMixin):
+#     def get_queryset(self):
+#         return CommentReaction.objects.filter(comment=self.kwargs['comment_id'])
+
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
+
+#     def destroy(self, request, *args, **kwargs):
+#         instance = get_object_or_404(self.get_queryset(),
+#                                               author=self.request.user.id)
+#         self.perform_destroy(instance)
