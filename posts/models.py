@@ -12,8 +12,8 @@ class Posts(models.Model):
     ]
     media_type_options = [
         (None, None),
-        ('video', 'video/*'),
-        ('image', 'image/*'),
+        ('video', 'video'),
+        ('image', 'image'),
     ]
 
     author = models.ForeignKey(User, verbose_name=_(
@@ -43,9 +43,10 @@ class Posts(models.Model):
     def save(self, *args, **kwargs):
         if self.content_type == 'profile':
             self.media_type = 'image'
-        if not self.id:
-            if self.media.path is not None:
-                self.media = compress_image(self.media)
+        if self.media_type == 'image':
+            if not self.id:
+                if self.media.path is not None:
+                    self.media = compress_image(self.media)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -74,6 +75,7 @@ class Comments(models.Model):
 
 
 class ReactionTypes(models.Model):
+    ## Like, Love, Laugh, Want
 
     reaction_type = models.CharField(_("Reaction Type"), max_length=50)
 

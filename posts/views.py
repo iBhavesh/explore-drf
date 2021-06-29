@@ -1,11 +1,13 @@
 from django.db.models import Q
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView
+)
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.response import Response
-from posts.permissions import IsAuthorOrPostAuthorOrReadOnly, IsAuthorOrReadOnly
-from .serializers import CommentSerializer, PostSerializer
-from .models import Comments, Posts
+from .permissions import IsAuthorOrPostAuthorOrReadOnly, IsAuthorOrReadOnly
+from .serializers import CommentSerializer, PostReactionSerializer, PostSerializer
+from .models import Comments, PostReaction, Posts
 
 # Create your views here.
 
@@ -67,3 +69,16 @@ class Comment(RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         instance.is_active = False
         instance.save()
+
+
+class ReactPost(ListCreateAPIView):
+    serializer_class = PostReactionSerializer
+
+    def get_queryset(self):
+        return PostReaction.objects.filter(post=self.kwargs['post_id'])
+
+    def create(self, request, *args, **kwargs):
+        request.data['author'] = request.user.id
+        request.data['post'] = kwargs['post_id']
+        print(request.data)
+        return super().create(request, *args, **kwargs)
