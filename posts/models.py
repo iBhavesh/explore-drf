@@ -55,7 +55,7 @@ class Posts(models.Model):
 
 class Comments(models.Model):
     author = models.ForeignKey(User, verbose_name=_(
-        "Author"), on_delete=models.CASCADE)
+        "Author"), on_delete=models.CASCADE, related_name="comments")
     post = models.ForeignKey(Posts, verbose_name=_(
         "post"), on_delete=models.CASCADE)
     is_active = models.BooleanField(_("Is Active"), default=True)
@@ -65,6 +65,49 @@ class Comments(models.Model):
     updated_at = models.DateTimeField(
         _("Updated At"), auto_now=True, auto_now_add=False)
 
+    def __str__(self):
+        return str(self.id)
+
     class Meta:
         verbose_name_plural = "Comments"
         ordering = ['created_at']
+
+
+class ReactionTypes(models.Model):
+
+    reaction_type = models.CharField(_("Reaction Type"), max_length=50)
+
+    def __str__(self):
+        return self.reaction_type
+
+    class Meta:
+        verbose_name_plural = "ReactionTypes"
+        ordering = ['id']
+
+
+class PostReaction(models.Model):
+    author = models.ForeignKey(User, verbose_name=_(
+        "Author"), on_delete=models.CASCADE, related_name="post_reaction")
+    post = models.ForeignKey(Posts, verbose_name=_("post"),
+                             on_delete=models.CASCADE,
+                             related_name="post_reaction")
+    reaction_type = models.ForeignKey(
+        ReactionTypes, verbose_name=_("Reaction"), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "PostReactions"
+        unique_together = ('author', 'post')
+
+
+class CommentReaction(models.Model):
+    author = models.ForeignKey(User, verbose_name=_(
+        "Author"), on_delete=models.CASCADE, related_name="comment_reaction")
+    comment = models.ForeignKey(Comments, verbose_name=_("comment"),
+                                on_delete=models.CASCADE,
+                                related_name="comment_reaction")
+    reaction_type = models.ForeignKey(
+        ReactionTypes, verbose_name=_("Reaction"), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "CommentReactions"
+        unique_together = ('author', 'comment')

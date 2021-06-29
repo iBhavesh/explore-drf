@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Posts, Comments
+from .models import Posts, Comments, ReactionTypes, PostReaction, CommentReaction
 # Register your models here.
 
 
@@ -13,3 +13,18 @@ class PostsManager(admin.ModelAdmin):
 class CommentsManager(admin.ModelAdmin):
     list_display = ['author', 'id', 'post',
                     'comment', 'created_at', 'updated_at', 'is_active']
+
+
+@admin.register(ReactionTypes)
+class ReactionManager(admin.ModelAdmin):
+    list_display = ['reaction_type', 'id']
+
+
+@admin.register(PostReaction)
+class PostReactionManager(admin.ModelAdmin):
+    list_display = ['reaction_type', 'id', 'post', 'author']
+
+
+@admin.register(CommentReaction)
+class CommentReactionManager(admin.ModelAdmin):
+    list_display = ['reaction_type', 'id', 'comment', 'author']
