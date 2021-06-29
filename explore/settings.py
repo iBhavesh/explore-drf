@@ -30,7 +30,7 @@ SECRET_KEY = environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = environ.get('DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "explore-drf.herokuapp.com"]
 
 
 # Application definition
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'custom_auth',
     'rest_framework',
     'user',
     'followers',

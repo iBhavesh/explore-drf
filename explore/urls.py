@@ -7,7 +7,6 @@ from .import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('custom_auth.urls')),
     path('user/', include('user.urls')),
     path('posts/', include('posts.urls')),
     path(str(settings.MEDIA_URL)[1:] +

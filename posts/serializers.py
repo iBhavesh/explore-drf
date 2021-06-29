@@ -21,7 +21,7 @@ class CommentReactionSerializer(serializers.ModelSerializer):
         fields = ['author', 'comment', 'reaction_type', 'created_at']
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostListSerializer(serializers.ModelSerializer):
     author = UserSerializer()
     post_reaction = PostReactionSerializer(many=True, read_only=True)
 
@@ -29,7 +29,15 @@ class PostSerializer(serializers.ModelSerializer):
         model = Posts
         fields = ['id', 'author', 'caption', 'media_type',
                   'content_type', 'media', 'post_reaction', 'created_at']
-        depth: 2
+
+
+class PostSerializer(serializers.ModelSerializer):
+    post_reaction = PostReactionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Posts
+        fields = ['id', 'author', 'caption', 'media_type',
+                  'content_type', 'media', 'post_reaction', 'created_at']
 
 
 class CommentSerializer(serializers.ModelSerializer):

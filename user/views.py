@@ -56,6 +56,7 @@ class UpdateProfilePicture(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        print(request.data)
         author = request.data.get('author', "")
         if request.user.id is not int(author):
             return Response({"error": "You are not authorized to do this"},

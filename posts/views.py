@@ -11,7 +11,8 @@ from rest_framework.response import Response
 from .permissions import IsAuthorOrPostAuthorOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
     CommentReactionSerializer,
-    CommentSerializer, PostReactionSerializer, PostSerializer
+    CommentSerializer,
+    PostListSerializer, PostReactionSerializer, PostSerializer
 )
 from .models import CommentReaction, Comments, PostReaction, Posts
 
@@ -21,6 +22,11 @@ from .models import CommentReaction, Comments, PostReaction, Posts
 class PostList(ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = PostSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return PostListSerializer
+        return PostSerializer
 
     def get_queryset(self):
         user_id = self.request.user.id
@@ -37,8 +43,12 @@ class PostList(ListCreateAPIView):
 
 
 class Post(RetrieveUpdateDestroyAPIView):
-    serializer_class = PostSerializer
     permission_classes = [IsAuthorOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return PostListSerializer
+        return PostSerializer
 
     def get_queryset(self):
         user_id = self.request.user.id
