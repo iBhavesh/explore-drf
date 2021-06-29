@@ -14,6 +14,7 @@ from pathlib import Path
 from os import environ
 from datetime import timedelta
 import django_heroku
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,9 +28,9 @@ SECRET_KEY = environ.get(
     'SECRET_KEY', 'django-insecure-#75_+p@#e5^&(l5pd#++i9ti0ae%xu1unt0(^sp%hkwn$pk3jk')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = environ.get('PRODUCTION', '') != 'False'
+DEBUG = environ.get('DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -172,4 +174,6 @@ else:
         'ROTATE_REFRESH_TOKENS': True
     }
 
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 django_heroku.settings(locals())
