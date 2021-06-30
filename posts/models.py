@@ -22,7 +22,7 @@ class Posts(models.Model):
     media = models.FileField(_("Media Path"), upload_to=upload_to,
                              max_length=255, null=True,)
     media_type = models.CharField(_("Media Type"), choices=media_type_options,
-                                  max_length=50, null=True)
+                                  max_length=50, null=True, blank=True)
     content_type = models.CharField(
         _("Content type"), max_length=50, choices=content_option)
     created_at = models.DateTimeField(
@@ -41,13 +41,12 @@ class Posts(models.Model):
         return super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        if self.content_type == 'profile':
-            self.media_type = 'image'
-        if self.media_type == 'image':
-            if not self.id:
-                if self.media.path is not None:
-                    self.media = compress_image(self.media)
-        super().save(*args, **kwargs)
+        if not self.id:
+            if self.content_type == 'profile':
+                self.media_type = 'image'
+            if self.media_type == "image":
+                self.media = compress_image(self.media)
+        super.save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Posts"

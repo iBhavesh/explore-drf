@@ -34,6 +34,9 @@ class PostListSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     post_reaction = PostReactionSerializer(many=True, read_only=True)
 
+    def create(self, validated_data):
+        return super().create(validated_data)
+
     class Meta:
         model = Posts
         fields = ['id', 'author', 'caption', 'media_type',
