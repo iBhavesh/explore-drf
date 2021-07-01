@@ -40,13 +40,13 @@ class Posts(models.Model):
             print('File Could not be deleted')
         return super().delete(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            if self.content_type == 'profile':
-                self.media_type = 'image'
-            if self.media_type == "image":
-                self.media = compress_image(self.media)
-        super.save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # if not self.id:
+        #     if self.content_type == 'profile':
+        #         self.media_type = 'image'
+        #     if self.media_type == "image":
+        #         self.media = compress_image(self.media)
+        # super.save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Posts"

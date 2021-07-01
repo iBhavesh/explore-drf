@@ -21,16 +21,17 @@ class GetFileURL(APIView):
         if request.user.is_superuser:
             return FileResponse(
                 open(settings.MEDIA_ROOT / file_path, 'rb'))
-        if request.user.id is not post[0].author.id:
-            media_link = MediaLink.objects.create(file_path=file_path)
-            url = reverse("media_url", args=(media_link.id,))
-            return Response({"url": url}, status=HTTP_201_CREATED)
-        if post[0].author.is_private_profile:
-            if request.user.follows is not post[0].author:
-                return Response({"error": "File is private."
-                                 "Only people who follow the user"
-                                 " can view this file"},
-                                status=HTTP_401_UNAUTHORIZED)
+        if file_path.find("profile") < 0:
+            if request.user.id is not post[0].author.id:
+                media_link = MediaLink.objects.create(file_path=file_path)
+                url = reverse("media_url", args=(media_link.id,))
+                return Response({"url": url}, status=HTTP_201_CREATED)
+            if post[0].author.is_private_profile:
+                if request.user.follows is not post[0].author:
+                    return Response({"error": "File is private."
+                                    "Only people who follow the user"
+                                     " can view this file"},
+                                    status=HTTP_401_UNAUTHORIZED)
 
         media_link = MediaLink.objects.create(file_path=file_path)
         url = reverse("media_url", args=(media_link.id,))
