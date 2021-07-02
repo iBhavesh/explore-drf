@@ -167,12 +167,14 @@ if DEBUG:
     SIMPLE_JWT = {
         'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
         'USER_ID_FIELD': 'email',
+        'USER_ID_CLAIM': 'email',
         'ROTATE_REFRESH_TOKENS': True
     }
 else:
     SIMPLE_JWT = {
         'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
         'USER_ID_FIELD': 'email',
+        'USER_ID_CLAIM': 'email',
         'ROTATE_REFRESH_TOKENS': True
     }
 

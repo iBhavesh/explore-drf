@@ -6,11 +6,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 from posts.models import Posts
 from posts.serializers import PostSerializer
-from .serializers import UserSerializer, UserProfileSerializer
+from .serializers import MyTokenObtainPairSerializer, UserSerializer, UserProfileSerializer
 from .models import User
 # Create your views here.
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 
 @api_view(['POST'])
