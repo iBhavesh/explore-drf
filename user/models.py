@@ -58,11 +58,19 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    gender_choices = [
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ("Other", "Other"),
+    ]
+
     email = models.EmailField(_("Email"), max_length=254, unique=True)
     first_name = models.CharField(_("First Name"), max_length=50)
     last_name = models.CharField(_("Last Name"), max_length=50)
     date_of_birth = models.DateField(
         _("Date of Birth"), auto_now=False, auto_now_add=False)
+    gender = models.CharField(
+        _("Gender"), choices=gender_choices, max_length=50)
     is_active = models.BooleanField(_("Is Active"), default=True)
     is_staff = models.BooleanField(_("Is Staff"), default=False)
     follows = models.ManyToManyField("self", verbose_name=_(

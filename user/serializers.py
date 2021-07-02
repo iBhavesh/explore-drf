@@ -7,7 +7,7 @@ class NestedUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
-                  'last_name']
+                  'last_name', 'gender', 'profile_picture']
 
 
 class NestedPostSerializer(serializers.ModelSerializer):
@@ -27,7 +27,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'first_name',
                   'last_name', 'date_of_birth', 'follows',
-                  'followed_by', 'profile_picture', 'posts', 'follower', 'following']
+                  'followed_by', 'profile_picture',
+                  'profile_picture', 'posts', 'follower', 'following']
         extra_kwargs = {'password': {'write_only': True}}
         depth = 1
 
