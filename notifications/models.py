@@ -21,6 +21,7 @@ class Notifications(models.Model):
                             choices=notification_type)
     post = models.ForeignKey(Posts, verbose_name=_(
         "post"), on_delete=models.CASCADE)
+    read = models.BooleanField(_("Read"), default=False)
     created_at = models.DateTimeField(
         _("Created At"), auto_now=False, auto_now_add=True)
 
@@ -29,3 +30,4 @@ class Notifications(models.Model):
 
     class Meta:
         verbose_name_plural = "Notifications"
+        ordering = ['-created_at']

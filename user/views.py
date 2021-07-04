@@ -27,10 +27,8 @@ def register(request):
         if serializer.is_valid():
             serializer.save()
             user = User.objects.get(email=serializer.data['email'])
-            refresh_token = RefreshToken.for_user(user)
             data = {
-                'access': str(refresh_token.access_token),
-                'refresh': str(refresh_token)
+                'message': 'Created Successfully'
             }
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
