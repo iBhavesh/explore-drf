@@ -7,6 +7,7 @@ from . import views
 
 urlpatterns = [
     path('<int:pk>', views.UserProfile.as_view()),
+    path('<int:user_id>/posts', views.UserPostList.as_view()),
     path('', include('followers.urls')),
     path('', include('notifications.urls')),
     path('', views.GetUser.as_view(), name="get_user"),

@@ -1,15 +1,15 @@
 from django.contrib.auth.hashers import check_password
+from django.db.models import Q
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from posts.models import Posts
-from posts.serializers import PostSerializer
-from .serializers import MyTokenObtainPairSerializer, UserSerializer, UserProfileSerializer
+from posts.serializers import PostListSerializer, PostSerializer
+from .serializers import MyTokenObtainPairSerializer, UserSerializer
 from .models import User
 # Create your views here.
 
@@ -26,7 +26,6 @@ def register(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            user = User.objects.get(email=serializer.data['email'])
             data = {
                 'message': 'Created Successfully'
             }
@@ -79,7 +78,7 @@ class UpdateProfilePicture(APIView):
 
 class UserProfile(RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
+    serializer_class = UserSerializer
 
 
 class GetUser(APIView):
@@ -87,3 +86,14 @@ class GetUser(APIView):
         user = User.objects.get(id=request.user.id)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+
+class UserPostList(ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get_queryset(self):
+        if self.request.user.id == self.kwargs['user_id']:
+            return Posts.objects.filter(Q(author=self.kwargs['user_id']))
+        return Posts.objects.filter(Q(author=self.kwargs['user_id']),
+                                    Q(author__is_private_profile=False) |
+                                    Q(author__followed_by=self.kwargs['user_id']))

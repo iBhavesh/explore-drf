@@ -43,7 +43,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'followed_by', 'profile_picture',
                   'profile_picture', 'posts', 'follower', 'following']
         extra_kwargs = {'password': {'write_only': True}}
-        depth = 1
+        # depth = 1
 
     def create(self, validated_data):
         user = User.objects.create_user(
