@@ -8,6 +8,7 @@ from rest_framework.mixins import (
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.response import Response
+from notifications.models import Notifications
 from .permissions import IsAuthorOrPostAuthorOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
     CommentReactionSerializer,
@@ -15,8 +16,6 @@ from .serializers import (
     PostListSerializer, PostReactionSerializer, PostSerializer
 )
 from .models import CommentReaction, Comments, PostReaction, Posts
-
-# Create your views here.
 
 
 class PostList(ListCreateAPIView):
@@ -66,6 +65,11 @@ class CommentList(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         request.data['author'] = request.user.id
         request.data['post'] = kwargs['post_id']
+        post = Posts.objects.filter(id=kwargs['post_id'])
+        print(post, kwargs['post_id'])
+        if post.exists():
+            Notifications.objects.create(
+                actor=request.user, type="comment", owner=post[0].author, post=post[0])
         return super().create(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
@@ -96,7 +100,10 @@ class PostReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, Destroy
     def create(self, request, *args, **kwargs):
         request.data['author'] = request.user.id
         request.data['post'] = kwargs['post_id']
-        print(request.data)
+        post = Posts.objects.filter(id=kwargs['post_id'])
+        if post.exists():
+            Notifications.objects.create(
+                actor=request.user, type="post_reaction", owner=post[0].author, post=post[0])
         return super().create(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -113,20 +120,6 @@ class PostReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, Destroy
                                      author=self.request.user.id)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# class PostReactionRemove(APIView, DestroyModelMixin):
-#     def get_queryset(self):
-#         return PostReaction.objects.filter(post=self.kwargs['post_id'],
-#                                            author=self.request.user.id)
-
-#     def delete(self, request, *args, **kwargs):
-#         return self.destroy(request, *args, **kwargs)
-
-#     def destroy(self, request, *args, **kwargs):
-#         instance = get_object_or_404(self.get_queryset(),
-#                                               author=self.request.user.id)
-#         self.perform_destroy(instance)
 
 
 class CommentReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, DestroyModelMixin):
@@ -138,7 +131,11 @@ class CommentReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, Dest
     def create(self, request, *args, **kwargs):
         request.data['author'] = request.user.id
         request.data['comment'] = kwargs['comment_id']
-        print(request.data)
+        comment = Comments.objects.filter(id=kwargs['post_id'])
+        if comment.exists():
+            Notifications.objects.create(
+                actor=request.user, type="comment_reaction",
+                owner=comment[0].author, post=comment[0].post)
         return super().create(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -155,16 +152,3 @@ class CommentReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, Dest
                                      author=self.request.user.id)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# class CommentReactionRemove(APIView, DestroyModelMixin):
-#     def get_queryset(self):
-#         return CommentReaction.objects.filter(comment=self.kwargs['comment_id'])
-
-#     def delete(self, request, *args, **kwargs):
-#         return self.destroy(request, *args, **kwargs)
-
-#     def destroy(self, request, *args, **kwargs):
-#         instance = get_object_or_404(self.get_queryset(),
-#                                               author=self.request.user.id)
-#         self.perform_destroy(instance)

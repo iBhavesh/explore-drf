@@ -2,7 +2,7 @@ import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from user.models import User
-from helpers import compress_image, upload_to
+from helpers import upload_to
 
 
 class Posts(models.Model):
@@ -39,14 +39,6 @@ class Posts(models.Model):
         except:  # pylint: disable=bare-except
             print('File Could not be deleted')
         return super().delete(*args, **kwargs)
-
-    # def save(self, *args, **kwargs):
-        # if not self.id:
-        #     if self.content_type == 'profile':
-        #         self.media_type = 'image'
-        #     if self.media_type == "image":
-        #         self.media = compress_image(self.media)
-        # super.save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Posts"
