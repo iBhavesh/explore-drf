@@ -11,10 +11,8 @@ from .models import MediaLink
 
 class GetFileURL(APIView):
     def get(self, request, file_path):
-        print(file_path)
 
         post = Posts.objects.filter(media=file_path)
-        print(file_path)
         if not post.exists():
             return Response({"error": "File Not Found"},
                             status=HTTP_404_NOT_FOUND)
@@ -25,6 +23,7 @@ class GetFileURL(APIView):
             if request.user.id is not post[0].author.id:
                 media_link = MediaLink.objects.create(file_path=file_path)
                 url = reverse("media_url", args=(media_link.id,))
+                url = request.build_absolute_uri(url)
                 return Response({"url": url}, status=HTTP_201_CREATED)
             if post[0].author.is_private_profile:
                 if request.user.follows is not post[0].author:
@@ -35,10 +34,14 @@ class GetFileURL(APIView):
 
         media_link = MediaLink.objects.create(file_path=file_path)
         url = reverse("media_url", args=(media_link.id,))
+        url = request.build_absolute_uri(url)
         return Response({"url": url}, status=HTTP_201_CREATED)
 
 
 class GetFile(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def get(self, request, pk):
         try:
             media_link = MediaLink.objects.get(pk=pk)
