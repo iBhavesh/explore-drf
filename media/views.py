@@ -1,3 +1,4 @@
+from user.models import User
 from django.http import FileResponse
 from django.conf import settings
 from django.urls import reverse
@@ -13,7 +14,8 @@ class GetFileURL(APIView):
     def get(self, request, file_path):
 
         post = Posts.objects.filter(media=file_path)
-        if not post.exists():
+        profile = User.objects.filter(profile_picture=file_path)
+        if not post.exists() and not profile.exists():
             return Response({"error": "File Not Found"},
                             status=HTTP_404_NOT_FOUND)
         if request.user.is_superuser:

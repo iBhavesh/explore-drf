@@ -39,9 +39,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
-                  'last_name', 'date_of_birth', 'follows',
-                  'followed_by', 'profile_picture',
-                  'profile_picture', 'posts', 'follower', 'following']
+                  'last_name', 'date_of_birth',
+                  'profile_picture',
+                  'profile_picture', ]
         extra_kwargs = {'password': {'write_only': True}}
         # depth = 1
 

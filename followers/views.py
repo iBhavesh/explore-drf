@@ -13,14 +13,22 @@ from .serializers import FollowerSerializer
 
 @api_view()
 def get_following(request, pk):
-    user = UserProfileSerializer(User.objects.get(pk=pk))
-    return Response(user.data.get('follows'), status=status.HTTP_200_OK)
+    try:
+        user = UserProfileSerializer(
+            User.objects.filter(followed_by=pk, follower__is_accepted=True), many=True)
+        return Response(user.data, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response([], status=status.HTTP_200_OK)
 
 
 @api_view()
 def get_follower(request, pk):
-    user = UserProfileSerializer(User.objects.get(pk=pk))
-    return Response(user.data.get('followed_by'), status=status.HTTP_200_OK)
+    try:
+        user = UserProfileSerializer(User.objects.filter(
+            follows=pk, following__is_accepted=True), many=True)
+        return Response(user.data, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response([], status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
