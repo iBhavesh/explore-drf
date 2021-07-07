@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from notifications.models import Notifications
 from .permissions import IsAuthorOrPostAuthorOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (
+    CommentListSerializer,
     CommentReactionSerializer,
     CommentSerializer,
     PostListSerializer, PostReactionSerializer, PostSerializer
@@ -51,13 +52,17 @@ class Post(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         user_id = self.request.user.id
-        return Posts.objects.filter(~Q(author=user_id),
+        return Posts.objects.filter(Q(author=user_id) |
                                     Q(author__is_private_profile=False) |
                                     Q(author__followed_by=user_id))
 
 
 class CommentList(ListCreateAPIView):
-    serializer_class = CommentSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return CommentListSerializer
+        return CommentSerializer
 
     def get_queryset(self):
         return Comments.objects.all()
@@ -75,7 +80,7 @@ class CommentList(ListCreateAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         comments = queryset.filter(post=kwargs['post_id'])
-        serializer = CommentSerializer(comments, many=True)
+        serializer = CommentListSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -86,9 +91,9 @@ class Comment(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Comments.objects.filter(post=self.kwargs['post_id'])
 
-    def perform_destroy(self, instance):
-        instance.is_active = False
-        instance.save()
+    # def perform_destroy(self, instance):
+    #     instance.is_active = False
+    #     instance.save()
 
 
 class PostReactionList(GenericAPIView, ListModelMixin, CreateModelMixin, DestroyModelMixin):

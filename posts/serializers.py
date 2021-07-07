@@ -34,13 +34,17 @@ class PostListSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     post_reaction = PostReactionSerializer(many=True, read_only=True)
 
-    def create(self, validated_data):
-        return super().create(validated_data)
-
     class Meta:
         model = Posts
         fields = ['id', 'author', 'caption', 'media_type',
                   'content_type', 'media', 'post_reaction', 'created_at']
+
+
+class CommentPostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Posts
+        fields = ['id', 'author']
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -48,4 +52,16 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
         fields = ['id', 'author', 'post', 'comment', 'created_at']
+        extra_kwargs = {'is_active': {'write_only': True}}
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+    author = UserSerializer()
+    comment_reaction = CommentReactionSerializer(many=True, read_only=True)
+    post = CommentPostSerializer()
+
+    class Meta:
+        model = Comments
+        fields = ['id', 'author', 'post', 'comment',
+                  'created_at', 'comment_reaction']
         extra_kwargs = {'is_active': {'write_only': True}}
