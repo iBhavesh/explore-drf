@@ -7,6 +7,8 @@ from . import views
 
 urlpatterns = [
     path('<int:pk>', views.UserProfile.as_view()),
+    path('forgot-password', views.ForgetPassword.as_view()),
+    path('reset/password', views.ResetPassword.as_view()),
     path('<int:user_id>/posts', views.UserPostList.as_view()),
     path('', include('followers.urls')),
     path('', include('notifications.urls')),

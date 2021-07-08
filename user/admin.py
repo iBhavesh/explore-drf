@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from user.models import User
+from user.models import PasswordReset, User
 
 
 class UserCreationForm(forms.ModelForm):
@@ -78,4 +78,5 @@ class UserAdminConfig(UserAdmin):
 
 
 admin.site.register(User, UserAdminConfig)
+admin.site.register(PasswordReset)
 admin.site.unregister(Group)

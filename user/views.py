@@ -1,3 +1,5 @@
+from django.utils.crypto import get_random_string
+from django.core.mail import send_mail
 from django.contrib.auth.hashers import check_password
 from django.db.models import Q
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -10,7 +12,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from posts.models import Posts
 from posts.serializers import PostListSerializer, PostSerializer
 from .serializers import MyTokenObtainPairSerializer, UserSerializer
-from .models import User
+from .models import PasswordReset, User
 # Create your views here.
 
 
@@ -97,3 +99,35 @@ class UserPostList(ListAPIView):
         return Posts.objects.filter(Q(author=self.kwargs['user_id']),
                                     Q(author__is_private_profile=False) |
                                     Q(author__followed_by=self.kwargs['user_id']))
+
+
+class ForgetPassword(APIView):
+    def post(self, request):
+        reset_token = get_random_string(
+            length=6, allowed_chars="ABCDEFGHJKMNPQRSTUVWXYS123456789")
+        print(reset_token)
+        pr = PasswordReset.objects.filter(user_id=request.user.id)
+        if pr.exists():
+            pr[0].delete()
+        PasswordReset.objects.create(
+            user_id=request.user,
+            verification_key=reset_token
+        )
+        send_mail("Password Reset", "Your Password reset token is " + reset_token,
+                  "no-reply@explore.com",
+                  [request.user.email])
+        return Response("Password reset token created", status=status.HTTP_201_CREATED)
+
+
+class ResetPassword(APIView):
+    def put(self, request):
+        reset_token = request.data.get("reset_token", "")
+        password = request.data.get("password", "")
+        password_reset = PasswordReset.objects.filter(
+            user_id=request.user.id, verification_key=reset_token)
+        print(password_reset)
+        if not password_reset.exists():
+            return Response("Token Not Valid", status=status.HTTP_400_BAD_REQUEST)
+        request.user.set_password(password)
+        request.user.save()
+        return Response("New password set", status=status.HTTP_201_CREATED)

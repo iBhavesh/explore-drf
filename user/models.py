@@ -91,3 +91,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class PasswordReset(models.Model):
+    verification_key = models.CharField(
+        _("Verification Key"), max_length=50, unique=True)
+    user_id = models.OneToOneField(
+        User, verbose_name=_("User Id"), on_delete=models.CASCADE)

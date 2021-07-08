@@ -1,4 +1,3 @@
-from user.models import User
 from django.http import FileResponse
 from django.conf import settings
 from django.urls import reverse
@@ -6,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED, HTTP_201_CREATED)
+from user.models import User
 from posts.models import Posts
 from .models import MediaLink
 
