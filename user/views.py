@@ -44,10 +44,8 @@ def update_password(request):
             request.data['password'], user.password)
         if password_is_valid:
             if request.data['new_password'] == request.data['confirm_password']:
-                print(user.password)
                 user.set_password(request.data['new_password'])
                 user.save()
-                print(user.password)
                 return Response('Updated', status=status.HTTP_200_OK)
             return Response('Password and confirm password should match',
                             status=status.HTTP_400_BAD_REQUEST)
@@ -102,32 +100,47 @@ class UserPostList(ListAPIView):
 
 
 class ForgetPassword(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request):
+        user = User.objects.filter(email=request.data.get("email", ""))
+        if not user.exists():
+            return Response({"error": "User with this email not found"},
+                            status=status.HTTP_400_BAD_REQUEST)
         reset_token = get_random_string(
             length=6, allowed_chars="ABCDEFGHJKMNPQRSTUVWXYS123456789")
         print(reset_token)
-        pr = PasswordReset.objects.filter(user_id=request.user.id)
+        pr = PasswordReset.objects.filter(user_id=user[0].id)
         if pr.exists():
             pr[0].delete()
         PasswordReset.objects.create(
-            user_id=request.user,
+            user_id=user[0],
             verification_key=reset_token
         )
         send_mail("Password Reset", "Your Password reset token is " + reset_token,
                   "no-reply@explore.com",
-                  [request.user.email])
+                  [user[0].email])
         return Response("Password reset token created", status=status.HTTP_201_CREATED)
 
 
 class ResetPassword(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def put(self, request):
         reset_token = request.data.get("reset_token", "")
         password = request.data.get("password", "")
+        print(password)
         password_reset = PasswordReset.objects.filter(
-            user_id=request.user.id, verification_key=reset_token)
-        print(password_reset)
+            verification_key=reset_token)
         if not password_reset.exists():
             return Response("Token Not Valid", status=status.HTTP_400_BAD_REQUEST)
-        request.user.set_password(password)
-        request.user.save()
+        try:
+            user = User.objects.get(id=password_reset[0].user_id.id)
+        except User.DoesNotExist:
+            return Response("User not Found", status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(password)
+        user.save()
+        password_reset[0].delete()
         return Response("New password set", status=status.HTTP_201_CREATED)

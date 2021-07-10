@@ -20,9 +20,9 @@ class Posts(models.Model):
         "Author"), on_delete=models.CASCADE, related_name="posts")
     caption = models.TextField(_("Caption"), blank=True)
     media = models.FileField(_("Media Path"), upload_to=upload_to,
-                             max_length=255, null=True,)
+                             max_length=255,)
     media_type = models.CharField(_("Media Type"), choices=media_type_options,
-                                  max_length=50, null=True, blank=True)
+                                  max_length=50, blank=True)
     content_type = models.CharField(
         _("Content type"), max_length=50, choices=content_option)
     created_at = models.DateTimeField(

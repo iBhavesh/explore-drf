@@ -95,6 +95,18 @@ class SendFollowRequest(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+class CancelFollowRequest(APIView):
+    def delete(self, request, pk):
+        try:
+            following = Followers.objects.get(
+                follower=request.user.id, following=pk, is_accepted=False)
+            following.delete()
+        except Followers.DoesNotExist:
+            return Response({"error": "Follow Request does not exist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class RemoveFollower(APIView):
     def delete(self, request, pk):
         try:
@@ -136,3 +148,13 @@ class FollowRequests(ListAPIView):
     def get_queryset(self):
         return User.objects.filter(follows=self.request.user.id,
                                    following__is_accepted=False)
+
+
+class FollowStatus(APIView):
+    def get(self, request, pk):
+        try:
+            following = Followers.objects.get(
+                follower=request.user.id, following=pk)
+            return Response({"is_accepted": following.is_accepted}, status=status.HTTP_200_OK)
+        except Followers.DoesNotExist:
+            return Response({"is_accepted": None}, status=status.HTTP_200_OK)
