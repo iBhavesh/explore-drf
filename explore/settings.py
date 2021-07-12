@@ -175,3 +175,4 @@ django_heroku.settings(locals())
 
 CORS_ALLOW_ALL_ORIGINS = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+TIME_ZONE = "Asia/Calcutta"
