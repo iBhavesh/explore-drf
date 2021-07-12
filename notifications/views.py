@@ -25,3 +25,9 @@ class NotificationRead(APIView):
             return Response("Notification not found", status=HTTP_400_BAD_REQUEST)
         except:  # pylint: disable=bare-except
             return Response("Something went wrong", status=HTTP_400_BAD_REQUEST)
+
+
+class NotificationReadAll(APIView):
+    def put(self, request):
+        Notifications.objects.filter(owner=request.user.id).update(read=True)
+        return Response("Modified", status=HTTP_200_OK)

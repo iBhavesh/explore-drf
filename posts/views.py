@@ -56,6 +56,13 @@ class Post(RetrieveUpdateDestroyAPIView):
                                     Q(author__is_private_profile=False) |
                                     Q(author__followed_by=user_id))
 
+    def delete(self, request, *args, **kwargs):
+        post = self.get_queryset()
+        if request.user.profile_picture == post[0].media:
+            request.user.profile_picture = None
+            request.user.save()
+        return super().delete(request, *args, **kwargs)
+
 
 class CommentList(ListCreateAPIView):
 

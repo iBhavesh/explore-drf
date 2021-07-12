@@ -35,7 +35,7 @@ class Posts(models.Model):
 
     def delete(self, *args, **kwargs):
         try:
-            os.remove(self.media)
+            os.remove(self.media.path)
         except:  # pylint: disable=bare-except
             print('File Could not be deleted')
         return super().delete(*args, **kwargs)

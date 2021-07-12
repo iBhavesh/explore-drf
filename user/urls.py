@@ -7,6 +7,7 @@ from . import views
 
 urlpatterns = [
     path('<int:pk>', views.UserProfile.as_view()),
+    path('search', views.UserSearch.as_view()),
     path('forgot-password', views.ForgetPassword.as_view()),
     path('reset/password', views.ResetPassword.as_view()),
     path('<int:user_id>/posts', views.UserPostList.as_view()),
@@ -19,4 +20,8 @@ urlpatterns = [
     path('password', views.update_password, name="update_password"),
     path('profile/picture', views.UpdateProfilePicture.as_view(),
          name="update_profile_picture"),
+    path('profile/<int:pk>', views.UpdateProfile.as_view(),
+         name="update_profile"),
+    path('profile/picture/remove', views.RemoveProfilePicture.as_view(),
+         name="remove_profile_picture"),
 ]

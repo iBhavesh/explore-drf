@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import Q
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView, ListAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -76,9 +76,34 @@ class UpdateProfilePicture(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UpdateProfile(UpdateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+class RemoveProfilePicture(APIView):
+
+    def delete(self, request):
+        request.user.profile_picture = None
+        request.user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class UserProfile(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class UserSearch(ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        query_string = self.request.GET.get('query', '').split()
+        print(query_string)
+        queryset = User.objects.filter(Q(email__in=query_string) |
+                                       Q(first_name__in=query_string) |
+                                       Q(last_name__in=query_string))
+        return queryset
 
 
 class GetUser(APIView):

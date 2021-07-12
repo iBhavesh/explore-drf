@@ -70,7 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(
         _("Date of Birth"), auto_now=False, auto_now_add=False)
     gender = models.CharField(
-        _("Gender"), choices=gender_choices, max_length=50)
+        _("Gender"), choices=gender_choices, max_length=50, default="Male")
     is_active = models.BooleanField(_("Is Active"), default=True)
     is_staff = models.BooleanField(_("Is Staff"), default=False)
     follows = models.ManyToManyField("self", verbose_name=_(
